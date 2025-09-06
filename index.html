@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloodyLight</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: #0a0a0a;
+            --surface: #111111;
+            --surface-elevated: #1a1a1a;
+            --surface-glass: rgba(255, 255, 255, 0.02);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.75);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 0, 0, 0.25);
+            --accent: #ff0000;
+            --accent-hover: #ff2626;
+            --accent-glow: rgba(255, 0, 0, 0.15);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.24);
+            --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.4);
+            --shadow-accent: 0 8px 32px rgba(255, 0, 0, 0.2);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .premium-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            opacity: 0.3;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            right: 20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.1) rotate(180deg);
+                opacity: 0.2;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--accent), transparent);
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--accent-hover), transparent);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            text-wrap: balance;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            text-wrap: pretty;
+        }
+
+        .text-large {
+            font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+            line-height: 1.6;
+        }
+
+        .text-small {
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 clamp(1rem, 4vw, 2rem);
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        header.scrolled {
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom-color: var(--border-hover);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            padding: 0 clamp(1rem, 4vw, 2rem);
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger:hover {
+            background: var(--surface-glass);
+        }
+
+        .hamburger span {
+            width: 20px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+            border-radius: 1px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-width: 160px;
+            backdrop-filter: blur(16px);
+            letter-spacing: -0.01em;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--text-primary);
+            border: 1px solid var(--accent);
+            box-shadow: var(--shadow-accent);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--surface-glass);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        section {
+            padding: clamp(4rem, 12vw, 8rem) 0;
+            position: relative;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .platforms {
+            margin-top: 4rem;
+        }
+
+        .platforms-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .platforms-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .platform-icon {
+            width: 64px;
+            height: 64px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface-glass);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(16px);
+        }
+
+        .platform-icon:hover {
+            border-color: var(--border-hover);
+            background: rgba(255, 0, 0, 0.05);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .platform-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--text-secondary);
+            transition: fill 0.3s ease;
+        }
+
+        .platform-icon:hover svg {
+            fill: var(--accent);
+        }
+
+        .windows-version {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            backdrop-filter: blur(24px);
+            transition: all 0.3s ease;
+        }
+
+        .windows-version:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .product {
+            background: var(--surface-glass);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+        }
+
+        .product-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(3rem, 8vw, 6rem);
+            align-items: center;
+        }
+
+        .product-text h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .product-text p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .product-image {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--surface-glass);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-image:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--border-hover);
+            box-shadow: 0 32px 80px rgba(255, 0, 0, 0.15);
+        }
+
+        .product-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .product-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .feature-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background: var(--surface-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            backdrop-filter: blur(16px);
+        }
+
+        .feature-icon:hover {
+            transform: translateY(-8px) rotate(2deg);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon img {
+            max-width: 70%;
+            max-height: 70%;
+            width: auto;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .feature h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .feature p {
+            margin-bottom: 2.5rem;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .support {
+            background: var(--surface-glass);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            backdrop-filter: blur(24px);
+        }
+
+        .donation {
+            text-align: center;
+        }
+
+        .donation-box {
+            display: inline-block;
+            background: var(--surface-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            backdrop-filter: blur(24px);
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s ease;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .donation-box:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .donate-btn {
+            background: linear-gradient(135deg, var(--accent), #ff3333);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1.2rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .donate-btn:hover {
+            background: linear-gradient(135deg, #ff3333, #ff6666);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-accent);
+        }
+
+        footer {
+            background: var(--background);
+            border-top: 1px solid var(--border);
+            padding: 4rem 0 3rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .loading.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                height: 70px;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(24px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                border-bottom: 1px solid var(--border);
+                border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                padding: 1rem 1.5rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .product-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+            }
+
+            .platforms-grid {
+                gap: 1rem;
+            }
+
+            .platform-icon {
+                width: 56px;
+                height: 56px;
+            }
+
+            .windows-version {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.8rem;
+            }
+
+            .footer-links {
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .platforms-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .windows-version {
+                margin-top: 1rem;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1400px;
+            }
+
+            h1 {
+                font-size: 7rem;
+            }
+
+            .hero p {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="premium-bg">
+        <div class="bg-grid"></div>
+        <div class="bg-glow"></div>
+    </div>
+
+    <header id="header">
+        <nav class="navbar">
+            <a href="#home" class="logo">BloodyLight</a>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#product">Продукт</a></li>
+                <li><a href="#feature">Возможности</a></li>
+                <li><a href="#support">Поддержка</a></li>
+            </ul>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content loading loaded">
+                    <h1>BloodyLight Эмулятор</h1>
+                    <p class="text-large">Высокопроизводительный эмулятор с уникальной оптимизацией и стабильной работой. Идеально подходит для требовательных пользователей.</p>
+                    
+                    <div class="btn-group">
+                        <a href="https://t.me/bloodylightstorebot" class="btn btn-primary">Купить через бота</a>
+                        <a href="https://t.me/blooodylight" class="btn btn-secondary">Сообщество</a>
+                    </div>
+
+                    <div class="platforms">
+                        <div class="platforms-title">Доступно на Windows 10/11</div>
+                        <div class="platforms-grid">
+                            <div class="windows-version">
+                                Windows 10 & 11 поддержка
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="product" class="product">
+            <div class="container">
+                <div class="product-content">
+                    <div class="product-text loading loaded">
+                        <h2>Мощный эмулятор</h2>
+                        <p>Создан для максимальной производительности и стабильности. Поддерживает слабые ПК и обеспечивает максимальный FPS.</p>
+                        <a href="https://t.me/bloodylightstorebot" class="btn btn-primary">Купить сейчас</a>
+                    </div>
+                    <div class="product-image loading loaded">
+                        <img src="https://i.postimg.cc/Kzb3SM29/photo-2025-09-04-21-04-06.jpg" alt="BloodyLight Эмулятор">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="feature" class="feature">
+            <div class="container">
+                <div class="feature-content loading loaded">
+                    <div class="feature-icon">
+                        <img src="https://i.postimg.cc/d1QQjmvK/photo-2025-09-06-20-25-58.jpg" alt="Эмулятор BloodyLight">
+                    </div>
+                    <h2>Ключевые преимущества</h2>
+                    <ul style="text-align: left; max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.8; color: var(--text-secondary);">
+                        <li>Кастомный движок без задержек и лагов</li>
+                        <li>Оптимизированный код БСА и автоинсталлер (2-4 минуты)</li>
+                        <li>4 класса настроек сенсы, лок/анлок по бинду</li>
+                        <li>Чистый код с более 80 оптимизированными классами</li>
+                        <li>Поддержка разрешений 5:4 и 16:9, авто-лок FPS (60 кадров)</li>
+                        <li>Хвид для точного прицеливания, фикс вылетов и додж система</li>
+                        <li>Безопасность: отсутствие вирусов, защита данных</li>
+                        <li>Поддержка слабых ПК, максимальный FPS</li>
+                        <li>Персональный менеджер и удобный бот для покупки БСА</li>
+                    </ul>
+                    <a href="https://t.me/bloodylightstorebot" class="btn btn-primary">Получить эмулятор</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="support" class="support">
+            <div class="container">
+                <div class="loading loaded">
+                    <h2>Поддержка и безопасность</h2>
+                    <p style="max-width: 700px; margin: 2rem auto;">
+                        Мы гарантируем отсутствие вредоносных программ и стабильную работу эмулятора. 
+                        Если у вас есть вопросы — наша команда готова помочь вам 24/7.
+                    </p>
+                    <a href="https://t.me/bloodylightstorebot" class="btn btn-secondary">Связаться с поддержкой</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 BloodyLight. Все права защищены.</p>
+            <div class="footer-links">
+                <a href="https://t.me/blooodylight">Telegram Сообщество</a>
+                <a href="https://t.me/bloodylightstorebot">Покупка и поддержка</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', function() {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+            });
+
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            
+            hamburger.addEventListener('click', function() {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('active');
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('loaded');
+                        }, index * 150);
+                    }
+                });
+            }, { 
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            document.querySelectorAll('.loading').forEach(el => {
+                observer.observe(el);
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        const headerHeight = document.getElementById('header').offsetHeight;
+                        const targetPosition = target.offsetTop - headerHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            let ticking = false;
+            function updateOnScroll() {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+            
+            window.addEventListener('scroll', updateOnScroll, { passive: true });
+        });
+    </script>
+</body>
+</html>
